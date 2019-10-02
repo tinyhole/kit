@@ -1,14 +1,14 @@
-package micro
+package kit
 
 import (
 	"fmt"
-	"github.com/tinyhole/kit/log"
 	"github.com/micro/go-micro/config"
-	"github.com/micro/go-micro/config/encoder/yaml"
 	"github.com/micro/go-micro/config/source"
 	"github.com/micro/go-micro/config/source/consul"
 	"github.com/micro/go-micro/config/source/file"
+	"github.com/micro/go-micro/config/encoder/yaml"
 	"github.com/sirupsen/logrus"
+	"github.com/tinyhole/kit/log"
 	"os"
 	"strings"
 )
@@ -16,15 +16,6 @@ import (
 type (
 	RegistryConfig struct {
 		Address string `json:"address"`
-	}
-
-	ServiceConfig struct {
-		Name         string `json:"name"`
-		ExternalAddr string `json:"externalAddr"`
-		ListenAddr   string `json:"listenAddr"`
-		BrokerAddr   string `json:"brokerAddr"`
-		Version      string `json:"version"`
-		Metadata     map[string]string `json:"metadata"`
 	}
 
 	LogConfig struct {
@@ -36,7 +27,6 @@ type (
 
 var (
 	DefaultRegistryConf RegistryConfig
-	DefaultServiceConf ServiceConfig //服务配置
 	DefaultLogConf LogConfig
 )
 
@@ -68,13 +58,6 @@ func LoadConfig() {
 	//检测是否是环境变量
 	if strings.Index(DefaultRegistryConf.Address, "$") == 0 {
 		DefaultRegistryConf.Address = os.Getenv(strings.TrimPrefix(DefaultRegistryConf.Address, "$"))
-	}
-
-	// 加载服务配置
-	err = config.Get("service").Scan(&DefaultServiceConf)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
 	}
 
 	// 加载并初始化日志配置
